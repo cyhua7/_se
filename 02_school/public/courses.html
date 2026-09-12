@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選課系統 | 國立金門大學校務系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 上方橫列 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">國立金門大學學生校務系統</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button id="logout-btn">登出</button>
+    </div>
+  </header>
+
+  <!-- 左側選單 -->
+  <nav class="sidebar">
+    <a href="dashboard.html" data-page="dashboard">首頁</a>
+    <a href="profile.html" data-page="profile">個人資料</a>
+    <a href="grades.html" data-page="grades">成績查詢</a>
+    <a href="schedule.html" data-page="schedule">我的課表</a>
+    <a href="courses.html" data-page="courses">選課系統</a>
+    <a href="credits.html" data-page="credits">畢業學分</a>
+    <a href="announcements.html" data-page="announcements">校務公告</a>
+    <a href="#" id="sidebar-logout">登出</a>
+  </nav>
+
+  <!-- 主要內容 -->
+  <main class="content">
+    <h2>選課系統</h2>
+
+    <!-- 已選課程統計 -->
+    <div class="enroll-summary">
+      <p>目前已選課程：<span id="count-courses">0</span> 門</p>
+      <p>目前已選學分：<span id="count-credits">0</span> 學分</p>
+    </div>
+
+    <p id="courses-message" class="message"></p>
+
+    <div class="card">
+      <table class="data-table" id="courses-table">
+        <thead>
+          <tr>
+            <th>課號</th>
+            <th>課程名稱</th>
+            <th>學分</th>
+            <th>授課教師</th>
+            <th>上課時間</th>
+            <th>教室</th>
+            <th>狀態</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="courses-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/courses.js"></script>
+</body>
+</html>

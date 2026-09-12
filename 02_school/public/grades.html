@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成績查詢 | 國立金門大學校務系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 上方橫列 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">國立金門大學學生校務系統</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button id="logout-btn">登出</button>
+    </div>
+  </header>
+
+  <!-- 左側選單 -->
+  <nav class="sidebar">
+    <a href="dashboard.html" data-page="dashboard">首頁</a>
+    <a href="profile.html" data-page="profile">個人資料</a>
+    <a href="grades.html" data-page="grades">成績查詢</a>
+    <a href="schedule.html" data-page="schedule">我的課表</a>
+    <a href="courses.html" data-page="courses">選課系統</a>
+    <a href="credits.html" data-page="credits">畢業學分</a>
+    <a href="announcements.html" data-page="announcements">校務公告</a>
+    <a href="#" id="sidebar-logout">登出</a>
+  </nav>
+
+  <!-- 主要內容 -->
+  <main class="content">
+    <h2>成績查詢</h2>
+    <div class="card">
+      <div class="toolbar">
+        <label for="semester-select">學期：</label>
+        <select id="semester-select"></select>
+      </div>
+
+      <p id="grades-message" class="message"></p>
+
+      <table class="data-table" id="grades-table">
+        <thead>
+          <tr>
+            <th>課號</th>
+            <th>科目名稱</th>
+            <th>學分</th>
+            <th>成績</th>
+          </tr>
+        </thead>
+        <tbody id="grades-tbody"></tbody>
+      </table>
+
+      <div id="grades-summary" class="grade-summary">
+        <p>本學期修習學分：<span id="total-credits"></span> 學分</p>
+        <p>本學期平均成績：<span id="average-score"></span> 分</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/grades.js"></script>
+</body>
+</html>

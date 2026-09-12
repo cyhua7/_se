@@ -1,0 +1,26 @@
+{
+  "A123456789": [
+    { "day": "星期一", "period": 2, "courseName": "現代科技", "classroom": "Q103", "teacher": "王教授" },
+    { "day": "星期一", "period": 3, "courseName": "計算機程式設計", "classroom": "T201", "teacher": "李教授" },
+    { "day": "星期一", "period": 4, "courseName": "計算機程式設計", "classroom": "T201", "teacher": "李教授" },
+    { "day": "星期二", "period": 2, "courseName": "資料結構", "classroom": "T202", "teacher": "張教授" },
+    { "day": "星期二", "period": 3, "courseName": "資料結構", "classroom": "T202", "teacher": "張教授" },
+    { "day": "星期三", "period": 2, "courseName": "網路資訊", "classroom": "T203", "teacher": "陳教授" },
+    { "day": "星期三", "period": 4, "courseName": "資料庫系統", "classroom": "T204", "teacher": "趙教授" },
+    { "day": "星期四", "period": 2, "courseName": "電路學", "classroom": "S102", "teacher": "林老師" },
+    { "day": "星期四", "period": 3, "courseName": "電路學", "classroom": "S102", "teacher": "林老師" },
+    { "day": "星期五", "period": 5, "courseName": "軟體工程", "classroom": "P01 操場", "teacher": "吳教練" },
+    { "day": "星期五", "period": 6, "courseName": "軟體工程", "classroom": "P01 操場", "teacher": "吳教練" }
+  ],
+  "A987654321": [
+    { "day": "星期一", "period": 1, "courseName": "計算機概論", "classroom": "T301", "teacher": "周教授" },
+    { "day": "星期一", "period": 2, "courseName": "計算機概論", "classroom": "T301", "teacher": "周教授" },
+    { "day": "星期二", "period": 3, "courseName": "數位邏輯", "classroom": "Q105", "teacher": "鄭教授" },
+    { "day": "星期二", "period": 4, "courseName": "數位邏輯", "classroom": "Q105", "teacher": "鄭教授" },
+    { "day": "星期三", "period": 2, "courseName": "國文(一)", "classroom": "S101", "teacher": "林老師" },
+    { "day": "星期四", "period": 1, "courseName": "微積分", "classroom": "Q103", "teacher": "王教授" },
+    { "day": "星期四", "period": 2, "courseName": "微積分", "classroom": "Q103", "teacher": "王教授" },
+    { "day": "星期五", "period": 3, "courseName": "程式設計", "classroom": "T303", "teacher": "李教授" },
+    { "day": "星期五", "period": 4, "courseName": "程式設計", "classroom": "T303", "teacher": "李教授" }
+  ]
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人資料 | 國立金門大學校務系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 上方橫列 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">國立金門大學學生校務系統</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button id="logout-btn">登出</button>
+    </div>
+  </header>
+
+  <!-- 左側選單 -->
+  <nav class="sidebar">
+    <a href="dashboard.html" data-page="dashboard">首頁</a>
+    <a href="profile.html" data-page="profile">個人資料</a>
+    <a href="grades.html" data-page="grades">成績查詢</a>
+    <a href="schedule.html" data-page="schedule">我的課表</a>
+    <a href="courses.html" data-page="courses">選課系統</a>
+    <a href="credits.html" data-page="credits">畢業學分</a>
+    <a href="announcements.html" data-page="announcements">校務公告</a>
+    <a href="#" id="sidebar-logout">登出</a>
+  </nav>
+
+  <!-- 主要內容 -->
+  <main class="content">
+    <h2>個人資料</h2>
+    <div class="card">
+      <h3>基本資料</h3>
+      <table class="info-table">
+        <tr>
+          <th>學號</th>
+          <td id="student-id"></td>
+        </tr>
+        <tr>
+          <th>姓名</th>
+          <td id="student-name"></td>
+        </tr>
+        <tr>
+          <th>系所</th>
+          <td id="student-department"></td>
+        </tr>
+        <tr>
+          <th>年級</th>
+          <td id="student-grade"></td>
+        </tr>
+        <tr>
+          <th>班級</th>
+          <td id="student-class"></td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>
+            <span id="student-email"></span>
+            <input type="text" id="input-email" class="profile-input" hidden>
+          </td>
+        </tr>
+        <tr>
+          <th>入學年度</th>
+          <td id="student-enrollment"></td>
+        </tr>
+        <tr>
+          <th>電話</th>
+          <td>
+            <span id="student-phone"></span>
+            <input type="text" id="input-phone" class="profile-input" placeholder="請輸入電話" hidden>
+          </td>
+        </tr>
+        <tr>
+          <th>聯絡地址</th>
+          <td>
+            <span id="student-address"></span>
+            <input type="text" id="input-address" class="profile-input" placeholder="請輸入聯絡地址" hidden>
+          </td>
+        </tr>
+        <tr>
+          <th>個人備註</th>
+          <td>
+            <span id="student-note"></span>
+            <textarea id="input-note" class="profile-input" placeholder="請輸入個人備註（選填）" hidden></textarea>
+          </td>
+        </tr>
+      </table>
+      <div class="profile-actions">
+        <button id="edit-btn">編輯資料</button>
+        <button id="save-btn" hidden>儲存</button>
+        <button id="cancel-btn" class="btn-cancel" hidden>取消</button>
+      </div>
+      <p id="profile-message" class="message"></p>
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

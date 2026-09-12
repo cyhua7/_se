@@ -1,0 +1,28 @@
+[
+  {
+    "studentId": "A123456789",
+    "password": "123456",
+    "name": "陳小明",
+    "department": "資訊工程學系",
+    "grade": "三年級",
+    "studentClass": "資工三",
+    "email": "m123456789@nqu.edu.tw",
+    "enrollmentYear": "113",
+    "phone": "",
+    "address": "",
+    "note": ""
+  },
+  {
+    "studentId": "A987654321",
+    "password": "123456",
+    "name": "林小美",
+    "department": "資訊工程學系",
+    "grade": "二年級",
+    "studentClass": "資工二",
+    "email": "m987654321@nqu.edu.tw",
+    "enrollmentYear": "114",
+    "phone": "",
+    "address": "",
+    "note": ""
+  }
+]

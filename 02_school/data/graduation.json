@@ -1,0 +1,44 @@
+{
+  "A123456789": {
+    "totalRequired": 128,
+    "categories": {
+      "通識必修": {
+        "required": 8,
+        "completed": 8
+      },
+      "專業必修": {
+        "required": 24,
+        "completed": 24
+      },
+      "專業選修": {
+        "required": 48,
+        "completed": 24
+      },
+      "自由選修": {
+        "required": 48,
+        "completed": 30
+      }
+    }
+  },
+  "A987654321": {
+    "totalRequired": 128,
+    "categories": {
+      "通識必修": {
+        "required": 8,
+        "completed": 8
+      },
+      "專業必修": {
+        "required": 24,
+        "completed": 12
+      },
+      "專業選修": {
+        "required": 48,
+        "completed": 16
+      },
+      "自由選修": {
+        "required": 48,
+        "completed": 12
+      }
+    }
+  }
+}

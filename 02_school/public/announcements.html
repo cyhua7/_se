@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校務公告 | 國立金門大學校務系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 上方橫列 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">國立金門大學學生校務系統</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button id="logout-btn">登出</button>
+    </div>
+  </header>
+
+  <!-- 左側選單 -->
+  <nav class="sidebar">
+    <a href="dashboard.html" data-page="dashboard">首頁</a>
+    <a href="profile.html" data-page="profile">個人資料</a>
+    <a href="grades.html" data-page="grades">成績查詢</a>
+    <a href="schedule.html" data-page="schedule">我的課表</a>
+    <a href="courses.html" data-page="courses">選課系統</a>
+    <a href="credits.html" data-page="credits">畢業學分</a>
+    <a href="announcements.html" data-page="announcements">校務公告</a>
+    <a href="#" id="sidebar-logout">登出</a>
+  </nav>
+
+  <!-- 主要內容 -->
+  <main class="content">
+    <h2>校務公告</h2>
+
+    <!-- 篩選與搜尋工具列 -->
+    <div class="card ann-toolbar">
+      <label for="category-select">分類：</label>
+      <select id="category-select">
+        <option value="全部">全部</option>
+      </select>
+      <input type="text" id="search-input" placeholder="搜尋公告（標題或內容）">
+    </div>
+
+    <p id="announcements-message" class="message"></p>
+    <div id="announcements-list"></div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/announcements.js"></script>
+</body>
+</html>

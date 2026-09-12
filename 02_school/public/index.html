@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登入 | 國立金門大學校務系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-box">
+    <div class="login-title">
+      <h1>國立金門大學</h1>
+      <h2>學生校務系統（簡易版）</h2>
+    </div>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="studentId">學號</label>
+        <input type="text" id="studentId" placeholder="請輸入學號" required>
+      </div>
+      <div class="form-group">
+        <label for="password">密碼</label>
+        <input type="password" id="password" placeholder="請輸入密碼" required>
+      </div>
+      <p id="error-message" class="error-message"></p>
+      <button type="submit" id="login-btn">登入</button>
+    </form>
+  </div>
+  <script src="js/login.js"></script>
+</body>
+</html>

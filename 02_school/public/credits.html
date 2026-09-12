@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>畢業學分 | 國立金門大學校務系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 上方橫列 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">國立金門大學學生校務系統</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button id="logout-btn">登出</button>
+    </div>
+  </header>
+
+  <!-- 左側選單 -->
+  <nav class="sidebar">
+    <a href="dashboard.html" data-page="dashboard">首頁</a>
+    <a href="profile.html" data-page="profile">個人資料</a>
+    <a href="grades.html" data-page="grades">成績查詢</a>
+    <a href="schedule.html" data-page="schedule">我的課表</a>
+    <a href="courses.html" data-page="courses">選課系統</a>
+    <a href="credits.html" data-page="credits">畢業學分</a>
+    <a href="announcements.html" data-page="announcements">校務公告</a>
+    <a href="#" id="sidebar-logout">登出</a>
+  </nav>
+
+  <!-- 主要內容 -->
+  <main class="content">
+    <h2>畢業學分</h2>
+
+    <!-- 總覽卡片 -->
+    <div class="credit-overview">
+      <div class="credit-stat">
+        <p class="credit-label">總畢業學分</p>
+        <p class="credit-value" id="credit-total">0</p>
+      </div>
+      <div class="credit-stat">
+        <p class="credit-label">已取得學分</p>
+        <p class="credit-value" id="credit-completed">0</p>
+      </div>
+      <div class="credit-stat">
+        <p class="credit-label">尚缺學分</p>
+        <p class="credit-value" id="credit-remaining">0</p>
+      </div>
+      <div class="credit-stat">
+        <p class="credit-label">完成百分比</p>
+        <p class="credit-value" id="credit-percent">0%</p>
+      </div>
+    </div>
+
+    <!-- 進度條 -->
+    <div class="card">
+      <div class="progress-row">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-text" id="progress-text">0 / 0 學分</span>
+      </div>
+    </div>
+
+    <!-- 分類學分表格 -->
+    <div class="card">
+      <h3>分類學分</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>類別</th>
+            <th>畢業要求</th>
+            <th>已取得</th>
+            <th>尚缺</th>
+            <th>完成率</th>
+          </tr>
+        </thead>
+        <tbody id="credits-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="credit-note">※ 本頁學分資料為模擬資料，僅供課程作業展示，並非金門大學實際畢業規定。</p>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/credits.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "A123456789": {
+    "113-1": [
+      { "courseId": "CS001", "courseName": "計算機概論", "credits": 3, "score": 82 },
+      { "courseId": "MA201", "courseName": "微積分", "credits": 3, "score": 78 },
+      { "courseId": "EN101", "courseName": "英文(一)", "credits": 2, "score": 88 },
+      { "courseId": "GE101", "courseName": "通識：人文與社會", "credits": 2, "score": 90 },
+      { "courseId": "PE001", "courseName": "體育", "credits": 0, "score": 85 }
+    ],
+    "113-2": [
+      { "courseId": "CS101", "courseName": "計算機程式設計", "credits": 3, "score": 85 },
+      { "courseId": "MA202", "courseName": "統計學", "credits": 3, "score": 76 },
+      { "courseId": "EN102", "courseName": "英文(二)", "credits": 2, "score": 86 },
+      { "courseId": "GE202", "courseName": "通識：自然科學", "credits": 2, "score": 80 },
+      { "courseId": "PE001", "courseName": "體育", "credits": 0, "score": 88 }
+    ],
+    "114-1": [
+      { "courseId": "CS102", "courseName": "資料結構", "credits": 3, "score": 91 },
+      { "courseId": "CS201", "courseName": "作業系統", "credits": 3, "score": 74 },
+      { "courseId": "CS310", "courseName": "網路概論", "credits": 3, "score": 80 },
+      { "courseId": "CH101", "courseName": "國文(一)", "credits": 2, "score": 84 },
+      { "courseId": "GE201", "courseName": "通識：公民參與", "credits": 2, "score": 92 }
+    ],
+    "114-2": [
+      { "courseId": "CS202", "courseName": "資料庫系統", "credits": 3, "score": 79 },
+      { "courseId": "CS301", "courseName": "演算法", "credits": 3, "score": 68 },
+      { "courseId": "CS401", "courseName": "程式設計專題", "credits": 2, "score": 88 },
+      { "courseId": "GE201", "courseName": "通識：公民參與", "credits": 2, "score": 81 },
+      { "courseId": "CH102", "courseName": "國文(二)", "credits": 2, "score": 90 }
+    ]
+  },
+  "A987654321": {
+    "114-1": [
+      { "courseId": "CS001", "courseName": "計算機概論", "credits": 3, "score": 90 },
+      { "courseId": "MA201", "courseName": "微積分", "credits": 3, "score": 84 },
+      { "courseId": "EN101", "courseName": "英文(一)", "credits": 2, "score": 92 },
+      { "courseId": "GE202", "courseName": "通識：自然科學", "credits": 2, "score": 78 }
+    ],
+    "114-2": [
+      { "courseId": "CS101", "courseName": "計算機程式設計", "credits": 3, "score": 88 },
+      { "courseId": "MA202", "courseName": "統計學", "credits": 3, "score": 81 },
+      { "courseId": "EN102", "courseName": "英文(二)", "credits": 2, "score": 89 },
+      { "courseId": "GE101", "courseName": "通識：人文與社會", "credits": 2, "score": 85 }
+    ]
+  }
+}
