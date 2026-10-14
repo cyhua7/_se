@@ -1,0 +1,8 @@
+# 這個專案沒有安裝任何第三方套件。
+#
+# 只使用 Python 標準庫：
+#   tkinter    圖形介面（Windows 官方安裝的 Python 內建）
+#   pathlib    處理檔案與資料夾
+#   threading  讓掃描在背景執行，畫面不會卡住
+#
+# 所以不需要執行 pip install。
