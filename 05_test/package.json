@@ -1,7 +1,7 @@
 {
   "name": "05_test",
   "version": "1.0.0",
-  "description": "",
+  "description": "猜數字遊戲 Web 應用，包含單元、API 與 E2E 三層自動化測試",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {

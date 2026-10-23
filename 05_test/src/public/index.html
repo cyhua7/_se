@@ -2,28 +2,350 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>測試展示網站</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猜數字遊戲</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.18);
+      --accent: #818cf8;
+      --accent-2: #c084fc;
+      --low: #fbbf24;
+      --high: #60a5fa;
+      --good: #34d399;
+      --bad: #fb7185;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      font-family: "Segoe UI", "Noto Sans TC", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 560px at 15% -10%, #312e81 0%, transparent 60%),
+        radial-gradient(900px 520px at 110% 110%, #4c1d95 0%, transparent 55%),
+        linear-gradient(160deg, #070b16, #0f172a 55%, #111827);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+
+    .card {
+      position: relative;
+      width: min(100%, 460px);
+      padding: 40px 32px 32px;
+      text-align: center;
+      background: rgba(17, 24, 39, 0.72);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(18px);
+      animation: rise 0.6s ease both;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 8vw, 2.6rem);
+      letter-spacing: 0.02em;
+      background: linear-gradient(90deg, #a5b4fc, #e879f9, #f0abfc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .guess-row {
+      display: flex;
+      gap: 10px;
+      margin: 30px 0 0;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      min-width: 0;
+      padding: 16px 18px;
+      font: inherit;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      background: rgba(2, 6, 23, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.18);
+    }
+
+    input[type="number"]::placeholder {
+      color: #64748b;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .btn-primary {
+      padding: 16px 26px;
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 14px 36px rgba(168, 85, 247, 0.45);
+    }
+
+    .message {
+      min-height: 52px;
+      margin: 18px 0 0;
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .message.is-low {
+      color: var(--low);
+    }
+
+    .message.is-high {
+      color: var(--high);
+    }
+
+    .message.is-correct {
+      color: var(--good);
+      animation: pop 0.35s ease;
+    }
+
+    .message.is-error {
+      color: var(--bad);
+    }
+
+    @keyframes pop {
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .range-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      padding: 14px 18px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: rgba(2, 6, 23, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 16px;
+    }
+
+    .range-values {
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #c7d2fe;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+
+    .attempts {
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: rgba(148, 163, 184, 0.1);
+      border-radius: 999px;
+    }
+
+    .btn-ghost {
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: rgba(148, 163, 184, 0.5);
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 32px 20px 24px;
+      }
+
+      .guess-row {
+        flex-direction: column;
+      }
+
+      .btn-primary {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1 id="title">簡易購物車</h1>
-  <button id="add-item-btn">加入商品</button>
-  <button id="checkout-btn">結帳</button>
-  <p id="total-price">總計: $0</p>
+  <main class="card">
+    <h1 id="title">猜數字遊戲</h1>
+    <p class="subtitle">我想了一個 1 到 100 的數字，你能猜中嗎？<br>每次猜錯都會縮小提示範圍。</p>
+
+    <div class="guess-row">
+      <input id="guess-input" type="number" min="1" max="100" placeholder="輸入 1~100" autofocus>
+      <button id="guess-btn" class="btn-primary">猜！</button>
+    </div>
+
+    <p id="message" class="message" aria-live="polite">請輸入你的猜測</p>
+
+    <div class="range-panel">
+      <span>目前範圍</span>
+      <span id="range-display" class="range-values">1 ~ 100</span>
+    </div>
+
+    <div class="footer">
+      <span id="attempts" class="attempts">已猜次數: 0</span>
+      <button id="new-game-btn" class="btn-ghost">新遊戲</button>
+    </div>
+  </main>
 
   <script>
-    let cart = [];
-    document.getElementById('add-item-btn').addEventListener('click', () => {
-      cart.push({ price: 100, quantity: 1 });
-    });
+    const MIN_NUMBER = 1;
+    const MAX_NUMBER = 100;
 
-    document.getElementById('checkout-btn').addEventListener('click', async () => {
-      const res = await fetch('/api/checkout', {
+    let secret = Math.floor(Math.random() * 100) + 1;
+    let attempts = 0;
+    let low = MIN_NUMBER;
+    let high = MAX_NUMBER;
+
+    const input = document.getElementById('guess-input');
+    const message = document.getElementById('message');
+    const attemptsText = document.getElementById('attempts');
+    const rangeDisplay = document.getElementById('range-display');
+
+    function setMessage(text, tone) {
+      message.innerText = text;
+      message.className = 'message';
+      if (tone) {
+        message.classList.add(`is-${tone}`);
+      }
+    }
+
+    function updateStatus() {
+      attemptsText.innerText = `已猜次數: ${attempts}`;
+      rangeDisplay.innerText = `${low} ~ ${high}`;
+    }
+
+    function resetGame() {
+      secret = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      low = MIN_NUMBER;
+      high = MAX_NUMBER;
+      input.value = '';
+      setMessage('請輸入你的猜測');
+      updateStatus();
+      input.focus();
+    }
+
+    async function submitGuess() {
+      const guess = Number(input.value);
+      if (!Number.isInteger(guess) || guess < MIN_NUMBER || guess > MAX_NUMBER) {
+        setMessage(`請輸入 ${MIN_NUMBER} 到 ${MAX_NUMBER} 的整數`, 'error');
+        return;
+      }
+
+      const res = await fetch('/api/guess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart })
+        body: JSON.stringify({ secret, guess })
       });
       const data = await res.json();
-      document.getElementById('total-price').innerText = `總計: $${data.total}`;
+
+      if (!res.ok) {
+        setMessage(data.error, 'error');
+        return;
+      }
+
+      attempts += 1;
+
+      if (data.result === 'correct') {
+        setMessage(`恭喜猜中！答案就是 ${secret}`, 'correct');
+      } else if (data.result === 'lower') {
+        high = Math.min(high, guess);
+        setMessage(`太大了！數字在 ${low} ~ ${high} 之間`, 'high');
+      } else {
+        low = Math.max(low, guess);
+        setMessage(`太小了！數字在 ${low} ~ ${high} 之間`, 'low');
+      }
+
+      updateStatus();
+      input.value = '';
+      input.focus();
+    }
+
+    document.getElementById('guess-btn').addEventListener('click', submitGuess);
+    document.getElementById('new-game-btn').addEventListener('click', resetGame);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') submitGuess();
     });
   </script>
 </body>
