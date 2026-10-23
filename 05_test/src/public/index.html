@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>測試展示網站</title>
+</head>
+<body>
+  <h1 id="title">簡易購物車</h1>
+  <button id="add-item-btn">加入商品</button>
+  <button id="checkout-btn">結帳</button>
+  <p id="total-price">總計: $0</p>
+
+  <script>
+    let cart = [];
+    document.getElementById('add-item-btn').addEventListener('click', () => {
+      cart.push({ price: 100, quantity: 1 });
+    });
+
+    document.getElementById('checkout-btn').addEventListener('click', async () => {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart })
+      });
+      const data = await res.json();
+      document.getElementById('total-price').innerText = `總計: $${data.total}`;
+    });
+  </script>
+</body>
+</html>
