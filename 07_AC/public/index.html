@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="以 Cloudflare Workers、D1、R2 與 Workers AI 打造的稍後閱讀收藏夾。"
+    />
+    <title>Bookmark Vault · 稍後閱讀</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔖</text></svg>"
+    />
+  </head>
+  <body>
+    <div class="aurora" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🔖</span>
+        <div>
+          <h1>Bookmark Vault</h1>
+          <p>Cloudflare Workers · D1 · R2 · Workers AI</p>
+        </div>
+      </div>
+      <button id="lock-button" class="ghost small" type="button" title="清除本機儲存的金鑰">
+        重設金鑰
+      </button>
+    </header>
+
+    <main>
+      <section class="panel add-panel">
+        <form id="add-form" autocomplete="off">
+          <div class="add-row">
+            <input
+              id="url-input"
+              type="text"
+              inputmode="url"
+              placeholder="貼上網址，例如 https://example.com/article"
+              aria-label="網址"
+              required
+            />
+            <button id="add-button" class="primary" type="submit">加入收藏</button>
+          </div>
+          <input
+            id="note-input"
+            type="text"
+            maxlength="500"
+            placeholder="選填：為什麼想讀？"
+            aria-label="備註"
+          />
+          <p id="add-status" class="status" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel toolbar">
+        <label class="search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="搜尋標題、摘要、網址…"
+            aria-label="搜尋"
+          />
+        </label>
+        <div class="tabs" id="status-tabs" role="tablist">
+          <button class="tab active" data-status="" type="button" role="tab">全部</button>
+          <button class="tab" data-status="unread" type="button" role="tab">未讀</button>
+          <button class="tab" data-status="read" type="button" role="tab">已讀</button>
+          <button class="tab" data-status="favorite" type="button" role="tab">★ 收藏</button>
+        </div>
+      </section>
+
+      <div id="tag-bar" class="tag-bar" aria-label="標籤篩選" hidden></div>
+
+      <section id="grid" class="grid" aria-live="polite"></section>
+
+      <p id="empty" class="empty" hidden>
+        <span aria-hidden="true">🗂️</span>
+        還沒有符合條件的收藏，貼一個網址開始吧。
+      </p>
+    </main>
+
+    <footer class="footer">
+      資料存於 Cloudflare D1，封面存於 R2，摘要由 Workers AI 產生。
+    </footer>
+
+    <div id="toast" class="toast" role="status" hidden></div>
+
+    <template id="card-template">
+      <article class="card">
+        <a class="cover" aria-label="開啟網頁">
+          <img loading="lazy" alt="" hidden />
+          <span class="cover-fallback" aria-hidden="true"></span>
+          <span class="read-badge">已讀</span>
+        </a>
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="site"></span>
+            <span class="dot" aria-hidden="true">·</span>
+            <span class="date"></span>
+          </div>
+          <h2 class="title"><a></a></h2>
+          <p class="summary"></p>
+          <p class="note" hidden></p>
+          <div class="tags"></div>
+          <div class="actions">
+            <button type="button" data-action="read" class="ghost small">標為已讀</button>
+            <button type="button" data-action="favorite" class="ghost small star" title="收藏">
+              ☆
+            </button>
+            <button type="button" data-action="resummarize" class="ghost small">
+              重新摘要
+            </button>
+            <button type="button" data-action="delete" class="ghost small danger">刪除</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

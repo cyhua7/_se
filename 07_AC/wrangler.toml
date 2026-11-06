@@ -1,0 +1,27 @@
+name = "bookmark-vault"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# 靜態前端（public/ 內的檔案會自動由 Cloudflare Assets 提供）
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# 部署前用 `wrangler d1 create bookmark-db` 建立，並把 database_id 換成真實值。
+# 本機開發（wrangler dev）可直接使用下面的預留 UUID。
+[[d1_databases]]
+binding = "DB"
+database_name = "bookmark-db"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# 部署前用 `wrangler r2 bucket create bookmark-covers` 建立。
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "bookmark-covers"
+
+# Workers AI（用於自動摘要與標籤）
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true

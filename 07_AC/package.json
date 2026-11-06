@@ -1,0 +1,17 @@
+{
+  "name": "bookmark-vault",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Workers + D1 + R2 + Workers AI read-later app",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 execute bookmark-db --local --file=./schema.sql",
+    "db:remote": "wrangler d1 execute bookmark-db --remote --file=./schema.sql",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
