@@ -1,0 +1,12 @@
+#terminal-logs::-webkit-scrollbar {
+    width: 8px;
+}
+
+#terminal-logs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#terminal-logs::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 9999px;
+}

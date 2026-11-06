@@ -27,10 +27,6 @@ class TaskRun(Base):
     __tablename__ = "task_runs"
     __table_args__ = (
         CheckConstraint(
-            "task_type IN ('health_check', 'sync_data', 'process_files', 'e2e_test')",
-            name="task_runs_task_type_check",
-        ),
-        CheckConstraint(
             "status IN ('queued', 'running', 'success', 'failed', 'cancelled')",
             name="task_runs_status_check",
         ),

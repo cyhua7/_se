@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS task_runs (
     finished_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CONSTRAINT task_runs_task_type_check
-        CHECK (task_type IN ('health_check', 'sync_data', 'process_files', 'e2e_test')),
     CONSTRAINT task_runs_status_check
         CHECK (status IN ('queued', 'running', 'success', 'failed', 'cancelled')),
     CONSTRAINT task_runs_progress_check

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Workflow Manager</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3">
+            <span class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+                ⚡ AUTOMATION DASHBOARD
+            </span>
+            <span class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2.5 py-1 rounded-full border border-indigo-100">CYH</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div id="system-clock" class="text-sm font-mono text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">00:00:00</div>
+            <div class="flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-200 text-sm font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>System Status: Online</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- 1. System Health Check Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                        🩺 SYSTEM HEALTH
+                    </h3>
+                    <span class="text-xs text-slate-400">/api/tasks/health-check</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-4">檢查系統硬碟空間、資料庫連線與核心服務運作狀態。</p>
+            </div>
+            <button onclick="runTask('health-check')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+                RUN CHECK
+            </button>
+        </div>
+
+        <!-- 2. Data Sync Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                        🔄 DATA SYNC
+                    </h3>
+                    <span class="text-xs text-slate-400">/api/tasks/sync</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-4">觸發外部來源爬蟲/API 抓取，清洗並寫入資料庫。</p>
+            </div>
+            <button onclick="runTask('sync')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+                SYNC NOW
+            </button>
+        </div>
+
+        <!-- 3. File Processing Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                        📁 FILE PROCESSING
+                    </h3>
+                    <span class="text-xs text-slate-400">/api/tasks/process-files</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-4">掃描伺服器目錄，批次處理與轉換指定檔案格式。</p>
+            </div>
+            <button onclick="runTask('process-files')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+                PROCESS FILES
+            </button>
+        </div>
+
+        <!-- 4. E2E Tests Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                        🧪 E2E TESTS
+                    </h3>
+                    <span class="text-xs text-slate-400">/api/tasks/e2e-test</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-4">自動化驗證「前端 ➡️ API ➡️ 資料庫」全端整合流程。</p>
+            </div>
+            <button onclick="runTask('e2e-test')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+                RUN TESTS
+            </button>
+        </div>
+
+        <!-- Custom Task Runner -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                    🛠️ CUSTOM TASK RUNNER
+                </h3>
+                <span class="text-xs text-slate-400">POST /api/tasks/execute</span>
+            </div>
+            <form id="custom-task-form" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-3">
+                    <label for="custom-task-select" class="block text-xs font-medium text-slate-500 mb-1.5">任務指令</label>
+                    <select id="custom-task-select" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100">
+                        <option value="health_check">health_check</option>
+                        <option value="sync_data">sync_data</option>
+                        <option value="process_files">process_files</option>
+                        <option value="e2e_test">e2e_test</option>
+                        <option value="symbol">symbol</option>
+                        <option value="echo">echo</option>
+                        <option value="對話">對話</option>
+                        <option value="custom">custom</option>
+                    </select>
+                </div>
+                <div class="md:col-span-4">
+                    <label for="custom-task-name" class="block text-xs font-medium text-slate-500 mb-1.5">任務名稱</label>
+                    <input id="custom-task-name" type="text" maxlength="32" placeholder="例如 custom_report"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 disabled:bg-slate-50 disabled:text-slate-400" />
+                    <p id="custom-task-hint" class="mt-1 text-[11px] text-slate-400"></p>
+                </div>
+                <div class="md:col-span-5">
+                    <label for="custom-task-params" class="block text-xs font-medium text-slate-500 mb-1.5">參數 (JSON)</label>
+                    <textarea id="custom-task-params" rows="2" spellcheck="false" placeholder='{"source_url": "https://example.com/api"}'
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-mono text-slate-800 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"></textarea>
+                </div>
+                <div class="md:col-span-12 flex items-center justify-between gap-4">
+                    <p id="custom-task-error" class="text-xs text-red-500"></p>
+                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 px-5 rounded-xl text-sm transition-colors shadow-sm">
+                        執行自訂任務
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Bottom Section: Live Terminal & Task History -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col h-[400px]">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                    💻 LIVE TERMINAL LOGS
+                </h3>
+                <span id="terminal-status" class="text-xs text-slate-400">Idle</span>
+            </div>
+            <div id="terminal-logs" class="flex-1 bg-slate-900 text-slate-200 font-mono text-xs p-4 rounded-xl overflow-y-auto space-y-1 shadow-inner select-text">
+                <p class="text-slate-500">// 點擊上方任意按鈕以執行任務，即時日誌將在此處顯示...</p>
+            </div>
+        </div>
+
+        <!-- Task History Table Card -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col h-[400px]">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                <h3 class="font-semibold text-slate-900 flex items-center gap-2 text-sm">
+                    📊 TASK HISTORY
+                </h3>
+                <button onclick="loadHistory()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">重新整理</button>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs text-slate-400 border-b border-slate-100">
+                            <th class="py-2 font-medium">Task Type</th>
+                            <th class="py-2 font-medium">Status</th>
+                            <th class="py-2 font-medium">Progress</th>
+                            <th class="py-2 font-medium text-right">Started At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="text-xs divide-y divide-slate-100">
+                        <!-- 動態插入歷史資料 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Client Logic -->
+    <script>
+        // 即時時鐘
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('system-clock').innerText = now.toTimeString().split(' ')[0];
+        }, 1000);
+
+        function formatError(data) {
+            if (data.error_message) return data.error_message;
+            if (typeof data.detail === 'string') return data.detail;
+            if (Array.isArray(data.detail)) {
+                return data.detail.map(item => item.msg || JSON.stringify(item)).join('; ');
+            }
+            return '未知錯誤';
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function appendTerminalLine(message, colorClass = 'text-slate-300') {
+            const terminal = document.getElementById('terminal-logs');
+            const line = document.createElement('p');
+            line.className = `${colorClass} whitespace-pre-wrap break-words`;
+            line.textContent = message;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // 執行任務函式
+        async function runTask(endpoint) {
+            const statusLabel = document.getElementById('terminal-status');
+
+            appendTerminalLine(`> 正在呼叫 /api/tasks/${endpoint} ...`, 'text-indigo-400');
+            statusLabel.innerText = "Running...";
+            statusLabel.className = "text-xs text-amber-500 font-medium animate-pulse";
+
+            try {
+                const response = await fetch(`/api/tasks/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                const succeeded = response.ok && data.status === 'success';
+
+                if (succeeded) {
+                    appendTerminalLine(`> 任務執行成功 (ID: ${data.id})`, 'text-emerald-400');
+                    statusLabel.innerText = "Completed";
+                    statusLabel.className = "text-xs text-emerald-600 font-medium";
+                } else {
+                    appendTerminalLine(`> 執行失敗: ${formatError(data)}`, 'text-red-400');
+                    statusLabel.innerText = "Failed";
+                    statusLabel.className = "text-xs text-red-600 font-medium";
+                }
+
+                if (data.logs && data.logs.length > 0) {
+                    data.logs.forEach(log => {
+                        const color = log.log_level === 'error' ? 'text-red-400' : 'text-slate-300';
+                        const level = String(log.log_level || 'info').toUpperCase();
+                        appendTerminalLine(`  [${level}] ${log.message}`, color);
+                    });
+                }
+            } catch (err) {
+                appendTerminalLine(`> 網路或連線錯誤: ${err.message}`, 'text-red-400');
+                statusLabel.innerText = "Error";
+                statusLabel.className = "text-xs text-red-600 font-medium";
+            }
+
+            loadHistory(); // 更新下方歷史表格
+        }
+
+        // 自訂任務表單
+        const customTaskForm = document.getElementById('custom-task-form');
+        const taskSelect = document.getElementById('custom-task-select');
+        const taskNameInput = document.getElementById('custom-task-name');
+        const taskParamsInput = document.getElementById('custom-task-params');
+        const taskHint = document.getElementById('custom-task-hint');
+        const taskError = document.getElementById('custom-task-error');
+
+        let taskDefinitions = [
+            {
+                name: 'health_check',
+                label: '系統健康檢查',
+                description: '檢查磁碟空間與系統狀態。',
+                params_hint: {}
+            },
+            {
+                name: 'sync_data',
+                label: '資料同步',
+                description: '依來源網址與模式執行資料同步。',
+                params_hint: { source_url: 'https://example.com/api', mode: 'full' }
+            },
+            {
+                name: 'process_files',
+                label: '檔案批次處理',
+                description: '指定檔名進行批次轉換。',
+                params_hint: { filename: 'report_v1.csv', rows: 250 }
+            },
+            {
+                name: 'e2e_test',
+                label: 'E2E 整合測試',
+                description: '驗證 FastAPI 與 PostgreSQL 整合流程。',
+                params_hint: {}
+            },
+            {
+                name: 'symbol',
+                label: '符號圖案生成',
+                description: '依 symbol 與 count 重複輸出任意符號或圖案。',
+                params_hint: { symbol: '★', count: 10 }
+            },
+            {
+                name: 'echo',
+                label: '訊息回顯',
+                description: '將 message 內容記錄並回顯到日誌。',
+                params_hint: { message: '你好，世界！' }
+            },
+            {
+                name: '對話',
+                label: '簡單對話',
+                description: '將 message 或第一個參數內容當作對話訊息回顯。',
+                params_hint: { message: '你好' }
+            },
+            {
+                name: 'custom',
+                label: '自訂任務',
+                description: '使用通用處理器執行自訂任務名稱與參數。',
+                params_hint: { key: 'value' }
+            }
+        ];
+
+        function syncCustomForm() {
+            const selectedName = taskSelect.value;
+            const isCustom = selectedName === 'custom';
+
+            taskNameInput.disabled = !isCustom;
+            taskNameInput.value = isCustom ? '' : selectedName;
+            taskNameInput.placeholder = isCustom ? '例如 ★、對話、echo 或 custom_report' : selectedName;
+
+            const definition = taskDefinitions.find(item => item.name === selectedName);
+            taskParamsInput.value = definition
+                ? JSON.stringify(definition.params_hint || {}, null, 2)
+                : '{}';
+            taskHint.innerText = definition ? definition.description : '';
+            taskError.innerText = '';
+        }
+
+        async function loadTaskDefinitions() {
+            try {
+                const res = await fetch('/api/tasks/definitions');
+                if (!res.ok) {
+                    return;
+                }
+
+                const definitions = await res.json();
+                if (!Array.isArray(definitions) || definitions.length === 0) {
+                    return;
+                }
+
+                taskDefinitions = definitions;
+                const currentName = taskSelect.value;
+                taskSelect.innerHTML = taskDefinitions
+                    .map(def => `<option value="${escapeHtml(def.name)}">${escapeHtml(def.name)} - ${escapeHtml(def.label)}</option>`)
+                    .join('');
+
+                if (taskDefinitions.some(def => def.name === currentName)) {
+                    taskSelect.value = currentName;
+                }
+                syncCustomForm();
+            } catch (err) {
+                console.error('無法載入任務定義', err);
+            }
+        }
+
+        async function runDynamicTask(taskName, params) {
+            const statusLabel = document.getElementById('terminal-status');
+
+            appendTerminalLine(`> 正在呼叫 /api/tasks/execute (${taskName}) ...`, 'text-indigo-400');
+            statusLabel.innerText = "Running...";
+            statusLabel.className = "text-xs text-amber-500 font-medium animate-pulse";
+
+            try {
+                const response = await fetch('/api/tasks/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task_name: taskName, params })
+                });
+                const data = await response.json();
+                const succeeded = response.ok && data.status === 'success';
+
+                if (succeeded) {
+                    appendTerminalLine(`> 任務執行成功 (ID: ${data.id}, Task: ${data.task_name})`, 'text-emerald-400');
+                    statusLabel.innerText = "Completed";
+                    statusLabel.className = "text-xs text-emerald-600 font-medium";
+                } else {
+                    appendTerminalLine(`> 執行失敗: ${formatError(data)}`, 'text-red-400');
+                    statusLabel.innerText = "Failed";
+                    statusLabel.className = "text-xs text-red-600 font-medium";
+                }
+
+                if (data.logs && data.logs.length > 0) {
+                    data.logs.forEach(log => {
+                        const color = log.log_level === 'error' ? 'text-red-400' : 'text-slate-300';
+                        const level = String(log.log_level || 'info').toUpperCase();
+                        appendTerminalLine(`  [${level}] ${log.message}`, color);
+                    });
+                }
+            } catch (err) {
+                appendTerminalLine(`> 網路或連線錯誤: ${err.message}`, 'text-red-400');
+                statusLabel.innerText = "Error";
+                statusLabel.className = "text-xs text-red-600 font-medium";
+            }
+
+            loadHistory();
+        }
+
+        customTaskForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            taskError.innerText = '';
+
+            const selectedName = taskSelect.value;
+            const taskName = selectedName === 'custom'
+                ? taskNameInput.value.trim()
+                : selectedName;
+
+            if (!taskName) {
+                taskError.innerText = '請輸入自訂任務名稱。';
+                return;
+            }
+
+            if (/[\u0000-\u001F\u007F-\u009F]/.test(taskName)) {
+                taskError.innerText = '任務名稱不可包含控制字元。';
+                return;
+            }
+
+            let params = {};
+            const rawParams = taskParamsInput.value.trim();
+
+            if (rawParams) {
+                try {
+                    params = JSON.parse(rawParams);
+                } catch (err) {
+                    taskError.innerText = '參數必須是有效的 JSON。';
+                    return;
+                }
+
+                if (params === null || typeof params !== 'object' || Array.isArray(params)) {
+                    taskError.innerText = '參數必須是 JSON 物件。';
+                    return;
+                }
+            }
+
+            await runDynamicTask(taskName, params);
+        });
+
+        taskSelect.addEventListener('change', syncCustomForm);
+
+        // 載入歷史紀錄
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/tasks/history?limit=10');
+                const data = await res.json();
+                const tbody = document.getElementById('history-table-body');
+                tbody.innerHTML = '';
+
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        let statusBadge = '';
+                        if (item.status === 'success') {
+                            statusBadge = `<span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium border border-emerald-200">success</span>`;
+                        } else if (item.status === 'failed') {
+                            statusBadge = `<span class="bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-medium border border-red-200">failed</span>`;
+                        } else {
+                            statusBadge = `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-medium border border-amber-200">running</span>`;
+                        }
+
+                        const timeStr = new Date(item.started_at).toLocaleTimeString();
+                        const taskName = escapeHtml(item.task_name);
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="py-2.5 font-medium text-slate-800">${taskName}</td>
+                                <td class="py-2.5">${statusBadge}</td>
+                                <td class="py-2.5 text-slate-600">${item.progress}%</td>
+                                <td class="py-2.5 text-right text-slate-500 font-mono">${timeStr}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400">目前尚無執行紀錄</td></tr>`;
+                }
+            } catch (err) {
+                console.error("無法載入歷史紀錄", err);
+            }
+        }
+
+        // 網頁載入時初始化表單與歷史紀錄
+        syncCustomForm();
+        window.onload = () => {
+            loadTaskDefinitions();
+            loadHistory();
+        };
+    </script>
+</body>
+</html>
