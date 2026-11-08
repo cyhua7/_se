@@ -25,6 +25,26 @@ export function decodeEntities(input = '') {
   });
 }
 
+export function isPublicHostname(hostname) {
+  const host = String(hostname || '').toLowerCase().replace(/\.$/, '');
+  if (!host || !host.includes('.')) return false;
+  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal')) {
+    return false;
+  }
+
+  const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4) {
+    const [a, b] = ipv4.slice(1).map(Number);
+    if (a === 0 || a === 10 || a === 127) return false;
+    if (a === 169 && b === 254) return false;
+    if (a === 172 && b >= 16 && b <= 31) return false;
+    if (a === 192 && b === 168) return false;
+    if (a === 100 && b >= 64 && b <= 127) return false;
+  }
+
+  return true;
+}
+
 export function normalizeUrl(input) {
   if (typeof input !== 'string') return null;
   let raw = input.trim();
@@ -33,7 +53,7 @@ export function normalizeUrl(input) {
   try {
     const url = new URL(raw);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
-    if (!url.hostname || !url.hostname.includes('.')) return null;
+    if (!isPublicHostname(url.hostname)) return null;
     return url.toString();
   } catch {
     return null;
@@ -145,7 +165,37 @@ export function deriveTags({ text = '', description = '', siteName = '' } = {}) 
   return [...new Set(top)].slice(0, 5);
 }
 
+function normalizeAiData(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return { summary: '', tags: [] };
+  }
+
+  const summary = typeof data.summary === 'string' ? data.summary.trim().slice(0, 800) : '';
+  const rawTags = Array.isArray(data.tags) ? data.tags : [];
+  const tags = [
+    ...new Set(
+      rawTags
+        .filter((tag) => typeof tag === 'string')
+        .map((tag) =>
+          tag
+            .trim()
+            .toLowerCase()
+            .replace(/^#+/, '')
+            .replace(/\s+/g, '-')
+            .slice(0, 24)
+        )
+        .filter(Boolean)
+    ),
+  ].slice(0, 6);
+
+  return { summary, tags };
+}
+
 export function parseAiResult(raw) {
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    return normalizeAiData(raw);
+  }
+
   const text = String(raw || '').trim();
   if (!text) return { summary: '', tags: [] };
 
@@ -158,28 +208,8 @@ export function parseAiResult(raw) {
 
   for (const candidate of candidates) {
     try {
-      const data = JSON.parse(candidate);
-      if (!data || typeof data !== 'object' || Array.isArray(data)) continue;
-
-      const summary = typeof data.summary === 'string' ? data.summary.trim().slice(0, 800) : '';
-      const rawTags = Array.isArray(data.tags) ? data.tags : [];
-      const tags = [
-        ...new Set(
-          rawTags
-            .filter((tag) => typeof tag === 'string')
-            .map((tag) =>
-              tag
-                .trim()
-                .toLowerCase()
-                .replace(/^#+/, '')
-                .replace(/\s+/g, '-')
-                .slice(0, 24)
-            )
-            .filter(Boolean)
-        ),
-      ].slice(0, 6);
-
-      if (summary || tags.length) return { summary, tags };
+      const normalized = normalizeAiData(JSON.parse(candidate));
+      if (normalized.summary || normalized.tags.length) return normalized;
     } catch {
       // try the next candidate
     }

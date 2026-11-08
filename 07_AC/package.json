@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Cloudflare Workers + D1 + R2 + Workers AI read-later app",
+  "description": "Cloudflare Workers + D1 + KV + Workers AI read-later app",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }

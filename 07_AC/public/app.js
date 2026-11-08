@@ -44,7 +44,7 @@ async function api(path, options = {}, retried = false) {
   const response = await fetch(path, { ...options, headers });
 
   if (response.status === 401) {
-    if (retried) throw new Error('存取金鑰錯誤，請按右上角「重設金鑰」後再試');
+    if (retried) throw new Error('存取金鑰錯誤，請清除瀏覽器此網站資料後再試');
     const key = window.prompt('此網站已啟用存取保護，請輸入金鑰：');
     if (!key) throw new Error('需要存取金鑰才能使用');
     accessKey = key.trim();
@@ -346,10 +346,12 @@ statusTabs.addEventListener('click', (event) => {
   loadBookmarks();
 });
 
-lockButton.addEventListener('click', () => {
-  localStorage.removeItem('bookmark_access_key');
-  accessKey = '';
-  showToast('已清除本機金鑰，下次請求會重新詢問');
-});
+if (lockButton) {
+  lockButton.addEventListener('click', () => {
+    localStorage.removeItem('bookmark_access_key');
+    accessKey = '';
+    showToast('已清除本機金鑰，下次請求會重新詢問');
+  });
+}
 
 refresh();

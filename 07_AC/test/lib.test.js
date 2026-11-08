@@ -5,6 +5,7 @@ import {
   decodeEntities,
   deriveTags,
   extractMeta,
+  isPublicHostname,
   normalizeUrl,
   parseAiResult,
   toPublicBookmark,
@@ -23,6 +24,23 @@ test('normalizeUrl accepts bare domains and rejects unsafe schemes', () => {
   assert.equal(normalizeUrl('not a real url'), null);
   assert.equal(normalizeUrl(''), null);
   assert.equal(normalizeUrl(null), null);
+  assert.equal(normalizeUrl('http://127.0.0.1/admin'), null);
+  assert.equal(normalizeUrl('http://169.254.169.254/latest/meta-data'), null);
+  assert.equal(normalizeUrl('http://192.168.1.1'), null);
+  assert.equal(normalizeUrl('http://localhost:3000'), null);
+});
+
+test('isPublicHostname blocks private, loopback and internal names', () => {
+  assert.equal(isPublicHostname('example.com'), true);
+  assert.equal(isPublicHostname('sub.example.com.'), true);
+  assert.equal(isPublicHostname('127.0.0.1'), false);
+  assert.equal(isPublicHostname('10.0.0.5'), false);
+  assert.equal(isPublicHostname('172.16.0.1'), false);
+  assert.equal(isPublicHostname('192.168.0.1'), false);
+  assert.equal(isPublicHostname('169.254.1.1'), false);
+  assert.equal(isPublicHostname('localhost'), false);
+  assert.equal(isPublicHostname('printer.local'), false);
+  assert.equal(isPublicHostname('service.internal'), false);
 });
 
 test('extractMeta prefers Open Graph fields and resolves relative images', () => {
@@ -72,6 +90,10 @@ test('parseAiResult handles plain JSON, code fences and garbage', () => {
 
   assert.deepEqual(parseAiResult('not json at all'), { summary: '', tags: [] });
   assert.deepEqual(parseAiResult(''), { summary: '', tags: [] });
+  assert.deepEqual(parseAiResult({ summary: 'Object result', tags: ['AI', '#Cloud'] }), {
+    summary: 'Object result',
+    tags: ['ai', 'cloud'],
+  });
 });
 
 test('deriveTags extracts frequent words and caps the list at five', () => {

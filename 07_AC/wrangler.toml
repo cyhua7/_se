@@ -7,21 +7,29 @@ compatibility_date = "2025-01-01"
 directory = "./public"
 binding = "ASSETS"
 
-# 部署前用 `wrangler d1 create bookmark-db` 建立，並把 database_id 換成真實值。
-# 本機開發（wrangler dev）可直接使用下面的預留 UUID。
+# 此處已填入本專案使用的 D1；若重新建立資料庫，記得更新 database_id。
+# 本機開發（wrangler dev）會使用本機模擬的 D1，不會動到雲端資料。
 [[d1_databases]]
 binding = "DB"
 database_name = "bookmark-db"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "24f466f7-8df5-4e87-900d-5a4102d1a19e"
 
-# 部署前用 `wrangler r2 bucket create bookmark-covers` 建立。
-[[r2_buckets]]
-binding = "BUCKET"
-bucket_name = "bookmark-covers"
+# 封面儲存：使用免費的 Workers KV（不需要啟用 R2 或綁信用卡）。
+[[kv_namespaces]]
+binding = "COVERS"
+id = "77b01bae44234b86b922e486ecf10fa0"
+
+# 選用：若之後啟用 R2，建立 bucket 並取消下面註解即可，程式會優先使用 R2。
+# npx wrangler r2 bucket create bookmark-covers
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "bookmark-covers"
 
 # Workers AI（用於自動摘要與標籤）
+# Workers AI 沒有本機模擬；remote = true 會讓 `wrangler dev` 直接連到 Cloudflare（需登入）。
 [ai]
 binding = "AI"
+remote = true
 
 [observability]
 enabled = true

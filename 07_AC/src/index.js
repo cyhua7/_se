@@ -1,12 +1,13 @@
 import {
   deriveTags,
   extractMeta,
+  isPublicHostname,
   normalizeUrl,
   parseAiResult,
   toPublicBookmark,
 } from './lib.js';
 
-const AI_MODEL = '@cf/meta/llama-3.1-8b-instruct';
+const AI_MODEL = '@cf/meta/llama-3.1-8b-instruct-fp8';
 const MAX_REQUEST_BYTES = 500 * 1024;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_HTML_CHARS = 600_000;
@@ -40,10 +41,15 @@ async function handleApi(request, env, url) {
     const { pathname } = url;
 
     if (pathname === '/api/health') {
-      return json({ ok: true, ai: Boolean(env.AI), auth: Boolean(env.ACCESS_KEY) });
+      return json({
+        ok: true,
+        ai: Boolean(env.AI),
+        auth: Boolean(env.ACCESS_KEY),
+        covers: env.BUCKET ? 'r2' : env.COVERS ? 'kv' : null,
+      });
     }
 
-    // 封面圖會用 <img> 載入，無法附加自訂標頭，因此依不可猜測的 R2 key 公開。
+    // 封面圖會用 <img> 載入，無法附加自訂標頭，因此依不可猜測的 key 公開。
     if (pathname.startsWith('/api/covers/')) {
       return await serveCover(env, pathname);
     }
@@ -250,9 +256,9 @@ async function deleteBookmark(env, id) {
 
   if (row.cover_key) {
     try {
-      await env.BUCKET.delete(row.cover_key);
+      await deleteCover(env, row.cover_key);
     } catch (error) {
-      console.error('R2 delete failed:', error);
+      console.error('Cover delete failed:', error);
     }
   }
 
@@ -339,11 +345,22 @@ async function summarize(env, meta, pageUrl) {
     temperature: 0.2,
   });
 
-  return parseAiResult(result?.response ?? result?.result?.response ?? '');
+  const raw =
+    result?.response ??
+    result?.choices?.[0]?.message?.content ??
+    result?.result?.response ??
+    '';
+  return parseAiResult(raw);
 }
 
 async function cacheCover(env, imageUrl) {
-  if (!env.BUCKET || !imageUrl) return null;
+  if (!hasCoverStore(env) || !imageUrl) return null;
+
+  try {
+    if (!isPublicHostname(new URL(imageUrl).hostname)) return null;
+  } catch {
+    return null;
+  }
 
   const response = await fetch(imageUrl, {
     headers: {
@@ -366,17 +383,14 @@ async function cacheCover(env, imageUrl) {
   if (!buffer.byteLength || buffer.byteLength > MAX_IMAGE_BYTES) return null;
 
   const key = `cover-${crypto.randomUUID()}.${IMAGE_EXTENSIONS[contentType]}`;
-  await env.BUCKET.put(key, buffer, {
-    httpMetadata: {
-      contentType,
-      cacheControl: 'public, max-age=31536000, immutable',
-    },
-  });
+  await putCover(env, key, buffer, contentType);
 
   return key;
 }
 
 async function serveCover(env, pathname) {
+  if (!hasCoverStore(env)) return new Response('Not found', { status: 404 });
+
   const rawKey = pathname.slice('/api/covers/'.length);
   let key;
   try {
@@ -389,15 +403,62 @@ async function serveCover(env, pathname) {
     return new Response('Not found', { status: 404 });
   }
 
-  const object = await env.BUCKET.get(key);
-  if (!object) return new Response('Not found', { status: 404 });
+  const cover = await getCover(env, key);
+  if (!cover) return new Response('Not found', { status: 404 });
 
   const headers = new Headers();
-  headers.set('content-type', object.httpMetadata?.contentType || 'application/octet-stream');
+  headers.set('content-type', cover.contentType);
   headers.set('cache-control', 'public, max-age=31536000, immutable');
   headers.set('x-content-type-options', 'nosniff');
 
-  return new Response(object.body, { headers });
+  return new Response(cover.body, { headers });
+}
+
+// 封面儲存：優先使用 R2（若已啟用），否則使用免費的 Workers KV。
+function hasCoverStore(env) {
+  return Boolean(env.BUCKET || env.COVERS);
+}
+
+async function putCover(env, key, buffer, contentType) {
+  if (env.BUCKET) {
+    await env.BUCKET.put(key, buffer, {
+      httpMetadata: {
+        contentType,
+        cacheControl: 'public, max-age=31536000, immutable',
+      },
+    });
+    return;
+  }
+  if (env.COVERS) {
+    await env.COVERS.put(key, buffer, { metadata: { contentType } });
+    return;
+  }
+  throw new Error('沒有可用的封面儲存 binding');
+}
+
+async function getCover(env, key) {
+  if (env.BUCKET) {
+    const object = await env.BUCKET.get(key);
+    if (!object) return null;
+    return {
+      body: object.body,
+      contentType: object.httpMetadata?.contentType || 'application/octet-stream',
+    };
+  }
+  if (env.COVERS) {
+    const stored = await env.COVERS.getWithMetadata(key, { type: 'arrayBuffer' });
+    if (!stored.value) return null;
+    return {
+      body: stored.value,
+      contentType: stored.metadata?.contentType || 'application/octet-stream',
+    };
+  }
+  return null;
+}
+
+async function deleteCover(env, key) {
+  if (env.BUCKET) return env.BUCKET.delete(key);
+  if (env.COVERS) return env.COVERS.delete(key);
 }
 
 function isAuthorized(request, env) {
