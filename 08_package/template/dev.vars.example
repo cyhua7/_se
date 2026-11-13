@@ -1,0 +1,4 @@
+# 複製此檔為 .dev.vars 後填入（僅本機開發使用）
+# 此專案使用 D1 內建的電子郵件／密碼登入，不再需要 ACCESS_KEY。
+# 若日後要加入第三方服務金鑰，可放在這裡：
+# EXAMPLE_SECRET=change-me

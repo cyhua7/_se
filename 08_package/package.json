@@ -1,0 +1,45 @@
+﻿{
+  "name": "@cyhua7/bookmark-vault",
+  "version": "1.0.0",
+  "description": "Scaffold a Cloudflare Workers read-later app with email/password auth, D1, KV and Workers AI.",
+  "type": "module",
+  "bin": {
+    "bookmark-vault": "bin/create.js",
+    "create-bookmark-vault": "bin/create.js"
+  },
+  "files": [
+    "bin",
+    "template",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "kv",
+    "workers-ai",
+    "bookmark",
+    "read-later",
+    "auth",
+    "scaffold",
+    "template"
+  ],
+  "license": "MIT",
+  "author": "cyhua7",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyhua7/_se.git"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test template/test/lib.test.js template/test/auth.test.js"
+  }
+}
+
+

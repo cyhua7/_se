@@ -1,0 +1,36 @@
+name = "bookmark-vault"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# 靜態前端（public/ 內的檔案會自動由 Cloudflare Assets 提供）
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# 建立方式：npx wrangler d1 create bookmark-db
+# 將輸出的 database_id 貼到下面。
+[[d1_databases]]
+binding = "DB"
+database_name = "bookmark-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# 建立方式：npx wrangler kv namespace create bookmark-covers
+# 將輸出的 id 貼到下面。
+[[kv_namespaces]]
+binding = "COVERS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# 選用：若之後啟用 R2，建立 bucket 並取消下面註解即可，程式會優先使用 R2。
+# npx wrangler r2 bucket create bookmark-covers
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "bookmark-covers"
+
+# Workers AI（用於自動摘要與標籤）
+# Workers AI 沒有本機模擬；remote = true 會讓 `wrangler dev` 直接連到 Cloudflare（需登入）。
+[ai]
+binding = "AI"
+remote = true
+
+[observability]
+enabled = true
