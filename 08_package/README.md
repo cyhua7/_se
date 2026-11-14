@@ -1,73 +1,85 @@
-﻿# @cyhua7/bookmark-vault
+# @cyhua7/bookmark-vault
 
-隞?**Cloudflare Workers + D1 + KV + Workers AI** ??蝔??梯??嗉?憭?scaffolding 撌亙嚗撱?**?餃??萎辣嚗?蝣潸酉??乓??* ??雿蝙?刻蝡??嗉?摨怒?
-## 敹恍?憪?
+以 **Cloudflare Workers + D1 + KV + Workers AI** 打造的稍後閱讀收藏夾 scaffolding 工具，內建 **電子郵件／密碼註冊、登入、登出** 與每位使用者獨立的收藏庫。
+
+## 快速開始
+
 ```bash
 npx @cyhua7/bookmark-vault my-bookmarks
 cd my-bookmarks
 npm install
 ```
 
-?亥?撱箇? Cloudflare 鞈?銝阡蝵莎?
+接著建立 Cloudflare 資源並部署：
 
 ```bash
 npx wrangler login
 npx wrangler d1 create bookmark-db
 npx wrangler kv namespace create bookmark-covers
-# ?撓?箇? database_id ??id 憛恍?wrangler.toml
+# 把輸出的 database_id 與 id 填進 wrangler.toml
 npm run db:remote
 npm run deploy
 ```
 
-?祆??嚗?
+本機開發：
+
 ```bash
 npm run db:local
 npm run dev
 ```
 
-## ?
+## 功能
 
-- 閮餃?嚗?伐??餃嚗?蝣潔誑 **PBKDF2-SHA256嚗?00,000 甈∟翮隞??** ?厭??
-- Session 摮 D1嚗汗?其蝙??`HttpOnly; SameSite=Lax` cookie
-- 瘥?雿輻??賜??啗撌梁??嗉?嚗bookmarks.user_id`嚗?- 鞎潔?蝬脣??芸??? `og:title`??餈啜???撠
-- Workers AI ?Ｙ?????3?? ??蝐歹?憭望????蝝?砍?摮?- 撠?翰? Workers KV嚗??R2嚗?- ????蝐斤祟?詻歇霈嚗?????唳?閬??
-## 撠?蝯?嚗??撠?嚗?
+- 註冊／登入／登出，密碼以 **PBKDF2-SHA256（100,000 次迭代）** 加鹽雜湊
+- Session 存於 D1，瀏覽器使用 `HttpOnly; SameSite=Lax` cookie
+- 每位使用者只能看到自己的收藏（`bookmarks.user_id`）
+- 貼上網址自動抓取 `og:title`、描述、站名與封面
+- Workers AI 產生摘要與 3–5 個標籤，失敗時自動降級為本地關鍵字
+- 封面圖快取到 Workers KV（可選 R2）
+- 搜尋、標籤篩選、已讀／收藏切換、重新摘要、刪除
+
+## 專案結構（產生的專案）
+
 ```
 my-bookmarks/
-?? src/
-?? ?? index.js      # Worker ?脣暺PI 頝舐???炎???? ?? auth.js       # 撖Ⅳ???ession?ookie 撌亙
-?? ?? lib.js        # HTML metadata 閫???I 頛詨閫??蝑??賢?
-?? public/          # ?⊥??嗅?蝡荔?index.html / app.js / styles.css嚗??? test/            # node:test ?桀?皜祈岫
-?? schema.sql       # users / sessions / bookmarks 撱箄”隤?
-?? wrangler.toml
-?? package.json
+├─ src/
+│  ├─ index.js      # Worker 進入點、API 路由與權限檢查
+│  ├─ auth.js       # 密碼雜湊、session、cookie 工具
+│  └─ lib.js        # HTML metadata 解析、AI 輸出解析等純函式
+├─ public/          # 無框架前端（index.html / app.js / styles.css）
+├─ test/            # node:test 單元測試
+├─ schema.sql       # users / sessions / bookmarks 建表語法
+├─ wrangler.toml
+└─ package.json
 ```
 
 ## API
 
-| Method | Path | 隤芣? |
+| Method | Path | 說明 |
 | --- | --- | --- |
-| POST | `/api/auth/register` | 閮餃? `{ "email": "...", "password": "..." }` |
-| POST | `/api/auth/login` | ?餃嚗???閮剖? session cookie |
-| POST | `/api/auth/logout` | ?餃銝行???cookie |
-| GET | `/api/auth/me` | ???桀??餃???芰?亙???`null`嚗?|
-| GET | `/api/bookmarks?q=&tag=&status=` | ??桀?雿輻???嗉? |
-| POST | `/api/bookmarks` | ?啣??嗉? `{ "url": "...", "note": "..." }` |
-| PATCH | `/api/bookmarks/:id` | ?湔撌脰?嚗???酉 |
-| DELETE | `/api/bookmarks/:id` | ?芷?嗉?????|
-| POST | `/api/bookmarks/:id/resummarize` | ??Ｙ??? |
-| GET | `/api/tags` | 璅惜?蝙?冽活??|
-| GET | `/api/covers/:key` | 霈?翰????|
-| GET | `/api/health` | ?亙熒瑼Ｘ |
+| POST | `/api/auth/register` | 註冊 `{ "email": "...", "password": "..." }` |
+| POST | `/api/auth/login` | 登入，成功後設定 session cookie |
+| POST | `/api/auth/logout` | 登出並清除 cookie |
+| GET | `/api/auth/me` | 取得目前登入者（未登入回傳 `null`） |
+| GET | `/api/bookmarks?q=&tag=&status=` | 列出目前使用者的收藏 |
+| POST | `/api/bookmarks` | 新增收藏 `{ "url": "...", "note": "..." }` |
+| PATCH | `/api/bookmarks/:id` | 更新已讀／收藏／備註 |
+| DELETE | `/api/bookmarks/:id` | 刪除收藏與封面 |
+| POST | `/api/bookmarks/:id/resummarize` | 重新產生摘要 |
+| GET | `/api/tags` | 標籤與使用次數 |
+| GET | `/api/covers/:key` | 讀取快取封面 |
+| GET | `/api/health` | 健康檢查 |
 
-?支? `/api/health`?/api/covers/*` ??`/api/auth/*`嚗擗?API ?賡?閬????餃 session??
-## 摰??
-- 撖Ⅳ銝?唳???雿輻 Web Crypto ??PBKDF2 ??
-- Session token ?芸????潭 D1嚗ookie ??`HttpOnly`?SameSite=Lax`嚗TTPS 銝?銝?`Secure`
-- ???閰ａ撣?`user_id` 璇辣嚗?楊雿輻????- ??憭蝬脣???????IP嚗?其蜓璈?蝔梧?SSRF ?脰風嚗?- 撠?芣??JPEG/PNG/WebP/GIF/AVIF嚗?蝯?SVG
+除了 `/api/health`、`/api/covers/*` 與 `/api/auth/*`，其餘 API 都需要有效的登入 session。
 
-## ??
+## 安全性
+
+- 密碼不落地明文，使用 Web Crypto 的 PBKDF2 雜湊
+- Session token 只存雜湊值於 D1，cookie 為 `HttpOnly`、`SameSite=Lax`，HTTPS 下加上 `Secure`
+- 所有收藏查詢都帶 `user_id` 條件，避免跨使用者存取
+- 抓取外部網址前擋掉私有 IP／內部主機名稱（SSRF 防護）
+- 封面只接受 JPEG/PNG/WebP/GIF/AVIF，拒絕 SVG
+
+## 授權
 
 MIT
-
-

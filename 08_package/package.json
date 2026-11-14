@@ -1,6 +1,6 @@
-﻿{
+{
   "name": "@cyhua7/bookmark-vault",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scaffold a Cloudflare Workers read-later app with email/password auth, D1, KV and Workers AI.",
   "type": "module",
   "bin": {
@@ -41,5 +41,3 @@
     "test": "node --test template/test/lib.test.js template/test/auth.test.js"
   }
 }
-
-
