@@ -191,9 +191,61 @@ calls: ['bad-model', 'busy-model', 'busy-model']
 final text: ok
 ```
 
-### 關於真實 API 呼叫
+### 5. 真實 Gemini API 實測紀錄
 
-目前執行環境沒有 `GEMINI_API_KEY` / `GOOGLE_API_KEY`，因此**沒有進行真實 API 請求**，上面的輸出都是本機可重現的實測。設定金鑰後直接執行 `python agent_demo.py` 就會走真實模型；若仍遇到 404/503，程式會依上述規則自動處理。
+以下是**真實 API 呼叫**的輸出，不是離線模擬。金鑰只從 Windows 使用者環境變數讀取後注入單一 PowerShell 命令，執行完立即清除；沒有建立 `.env`，也沒有把金鑰寫入任何檔案或輸出。
+
+```powershell
+$env:GEMINI_API_KEY=[Environment]::GetEnvironmentVariable('GEMINI_API_KEY','User')
+python -X utf8 agent_demo.py
+Remove-Item Env:GEMINI_API_KEY
+```
+
+實際結果：
+
+```text
+[設定] 單次請求逾時 15000 ms；每個模型最多 2 次；最多 5 輪。
+
+[使用者任務] 現在幾點了？另外請幫我精確計算 (365 * 24) + 1280 等於多少？
+==================================================
+
+--- 第 1 輪迴圈 ---
+[模型] 嘗試 gemini-4-hydrogen
+[系統提示] gemini-4-hydrogen 暫時失敗（503），1.0 秒後重試 2/2 ...
+[系統提示] gemini-4-hydrogen 失敗：503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': '...，切換下一個模型。
+[模型] 嘗試 gemini-3.8-flash
+[系統提示] gemini-3.8-flash 暫時失敗（503），1.0 秒後重試 2/2 ...
+[系統提示] gemini-3.8-flash 失敗：504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}，切換下一個模型。
+[模型] 嘗試 gemini-3.6-flash
+[系統提示] gemini-3.6-flash 暫時失敗（504），1.0 秒後重試 2/2 ...
+[模型] 本次使用 gemini-3.6-flash
+[Agent 決策] 呼叫工具 -> get_current_time({})
+[工具回傳結果] 2026-11-27 11:16:33
+[Agent 決策] 呼叫工具 -> calculate_math({'expression': '(365 * 24) + 1280'})
+[工具回傳結果] 10040
+
+--- 第 2 輪迴圈 ---
+[模型] 嘗試 gemini-4-hydrogen
+[模型] 本次使用 gemini-4-hydrogen
+
+[Agent 最終回覆]
+目前的時間是 **2026年11月27日 11:16:33**。
+
+算式 `(365 * 24) + 1280` 的計算結果為 **10040**。
+==================================================
+exit_code=0
+```
+
+這一次同時驗證到的行為：
+
+| 模型 | 實際狀況 | 程式處理 |
+| --- | --- | --- |
+| `gemini-4-hydrogen` | 第 1 輪兩次 503 | 重試後仍失敗，自動切換下一個模型 |
+| `gemini-3.8-flash` | 先 503、再 504 | 重試後仍失敗，自動切換下一個模型 |
+| `gemini-3.6-flash` | 第一次 504，第二次成功 | 完成兩個工具呼叫並回灌 observation |
+| `gemini-4-hydrogen` | 第 2 輪恢復正常 | 成功產生最終文字回覆 |
+
+因此沒有發生無限卡住；503/504 都在重試或換模型後被消化，最終仍完成 Agent 迴圈。時間與模型可用性會隨執行時刻不同，重跑時不一定會看到完全一樣的錯誤順序。
 
 ## 疑難排解
 
